@@ -17,7 +17,7 @@ float perlinXInc         = 0.1;
 float perlinTimePosition;
 int mappedVal= 0;
 int minVal = 30;
-int PWMpins[] = {4,5,9,10};
+int PWMpins[] = {4,5,9,10};     //array to hold pin locations (these are the PWM pins uses on teensey)
 
 
 
@@ -29,30 +29,24 @@ void setup(){
 
 void loop(){   
   currentTime = micros(); // store current time
-  for(byte i=0;i< 5;i++)
   
+  for(byte i=0;i< 5;i++)
   { 
-      float x = float(i)*perlinXInc; // input for x value in the renderNoise function
-      byte val = renderNoise(x, perlinTimePosition+i*i); 
-      mappedVal=map(val,0,255, minVal, 255);
-      analogWrite(PWMpins[i],mappedVal);
-
+      float x = float(i)*perlinXInc;               // input for x value in the renderNoise function
+      byte val = renderNoise(x, perlinTimePosition+i*i);   //render the noise... i*i to get noise further in time position
+      mappedVal=map(val,0,255, minVal, 255);   //map the value so it doesn't hit zero
+      analogWrite(PWMpins[i],mappedVal);       //light the LED
   }
 
-  // go a step further in time (input for y function in perlin noise)
-  perlinTimePosition = perlinTimePosition + perlinTimeInc;  
-
-  // calculate the time the whole calculation took
-  passedTime = micros()-currentTime;
-
-  // because times will variate, remember the maximum time it took
-  if(passedTime>longestTime) longestTime = passedTime;
-
-  delay(20);
+ 
+  perlinTimePosition = perlinTimePosition + perlinTimeInc;   // go a step further in time (input for y function in perlin noise)
+  passedTime = micros()-currentTime;          // calculate the time the whole calculation took
+  if(passedTime>longestTime) longestTime = passedTime;            // because times will variate, remember the maximum time it took
+  delay(20);          //give processor a break
 }
 
 
-
+//***************** noise functions ***************************
 
 // returns a value between 0 - 255 for lights
 byte renderNoise(float x, float y)
@@ -67,6 +61,7 @@ byte renderNoise(float x, float y)
 
   return (byte) noise;  
 }
+
 
 float perlin_function(float x, float y)
 {
